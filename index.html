@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            /* Add some padding and margin to the dropdowns */
+            select {
+              padding: 8px;
+              margin: 5px;
+            }
+      
+            /* Style the dropdown options */
+            option {
+              background-color: #fff;
+              color: #333;
+            }
+            #weather-container{
+                text-align: center;
+                border: 2px solid black;
+                padding: 0px;
+                max-width: 50%;
+                min-width: 50%;
+                margin-top: 15%;
+                margin-left: 400px;
+                background-color: ash-white;
+            }
+          </style>
+    </head>
+    <body>
+
+            <div id="weather-container" >
+                <label for="country">Choose your country:</label>
+                    <select id="country">
+                        <option value="">--Please choose an option--</option>
+                        <option value="USA"> America </option>
+                        <option value="Canada"> Canada </option>
+                        <option value="Pakistan">Pakistan</option>
+                        <option value="India"> India </option>
+                        <option value="China"> China </option>
+                    </select>
+                <br/>
+                <label for="city">Choose your city:</label>
+                    <select id="city" disabled>
+                        <option value="">--Please choose a country first--</option>
+                    </select>
+            </div> 
+        <script>
+                const apiKey = '0adce2a55c0c65b1f54f748d619d9b06'; 
+                const citySelect = document.querySelector('#city');
+                // Function to get weather data from OpenWeather API
+                const getWeatherData = (cityName) => {
+                   
+                  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`;
+            
+                  fetch(apiUrl)
+                    .then((response) => {
+                      if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                      }
+                      return response.json();
+                    })
+                    .then((data) => {
+                      const temp = data.main.temp;
+                      const humidity = data.main.humidity;
+                      const pressure = data.main.pressure;
+                      const rain = Math.round(data.rain?.['1h'] || 0);
+                      
+
+
+                      const tempElem = document.createElement('p');
+                      tempElem.innerHTML = ` Temperature: ${temp}&deg;C`;
+                      const humidityElem = document.createElement('p');
+                      humidityElem.textContent = ` Humidity: ${humidity}%`;
+                      const pressureElem = document.createElement('p');
+                      pressureElem.textContent = ` Air Pressure: ${pressure} hPa`;
+                      const rainElem = document.createElement('p');
+                      rainElem.textContent = `Rain (last hour): ${rain} mm`;
+            
+                      const container = document.querySelector('#weather-container');
+                      container.append(tempElem, humidityElem, pressureElem, rainElem);
+                    })
+                    .catch((error) => {
+                      console.error('Error fetching weather data:', error);
+                    });
+                };
+            
+                // Add event listener to city select
+                citySelect.addEventListener('change', (event) => {
+                  const cityName = event.target.value;
+                  getWeatherData(cityName);
+                });
+            
+                // Function to populate city select with options for the selected country
+                const populateCitySelect = (country) => {
+                  const citySelect = document.querySelector('#city');
+                  citySelect.disabled = false;
+                  citySelect.innerHTML = '<option value="">--Please choose an option--</option>';
+            
+                  switch (country) {
+                    case 'USA':
+                      citySelect.add(new Option('New York', 'New York'));
+                      citySelect.add(new Option('Los Angeles', 'Los Angeles'));
+                      citySelect.add(new Option('Chicago', 'Chicago'));
+                      break;
+                    case 'Canada':
+                      citySelect.add(new Option('Toronto', 'Toronto'));
+                      citySelect.add(new Option('Montreal', 'Montreal'));
+                      citySelect.add(new Option('Vancouver', 'Vancouver'));
+                      break;
+                    case 'Pakistan':
+                      citySelect.add(new Option('Islamabad', 'Islamabad'));
+                      citySelect.add(new Option('Karachi', 'Karachi'));
+                      citySelect.add(new Option('Lahore', 'Lahore'));
+                      citySelect.add(new Option('Peshawar', 'Peshawar'));
+                      citySelect.add(new Option('Haripur', 'Haripur'));
+                      break;
+                    case 'India':
+                      citySelect.add(new Option('Delhi', 'Delhi'));
+                      citySelect.add(new Option('Mumbai', 'Mumbai'));
+                      citySelect.add(new Option('Bangalore', 'Bangalore'));
+                      break;
+                    case 'China':
+                      citySelect.add(new Option('Beijing', 'Beijing'));
+                      citySelect.add(new Option('Shanghai', 'Shanghai'));
+                      citySelect.add(new Option('Guangzhou', 'Guangzhou'));
+                      break;
+                    default:
+                      // do nothing
+                  }
+                };
+            
+                // Add event listener to country select
+                const countrySelect = document.querySelector('#country');
+                countrySelect.addEventListener('change', (event) => {
+                  const country = event.target.value;
+                  populateCitySelect(country);
+                });
+        </script>
+                     
+    </body>
+</html>
